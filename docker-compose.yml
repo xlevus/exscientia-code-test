@@ -10,3 +10,11 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: "codegen_dev"
       POSTGRES_PASSWORD: "postgres"
+
+  data:
+    build: 
+      context: src/python/dataserv
+    ports:
+      - "${DATASERV_INGRESS:-8080}:8080"
+    volumes:
+      - "./data:/data"
