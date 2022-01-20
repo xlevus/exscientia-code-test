@@ -1,0 +1,18 @@
+<h1>Show Library</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @library.name %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @library.description %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.library_path(@conn, :edit, @library) %></span> |
+<span><%= link "Back", to: Routes.library_path(@conn, :index) %></span>
