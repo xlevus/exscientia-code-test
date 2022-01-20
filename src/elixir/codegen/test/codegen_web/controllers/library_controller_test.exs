@@ -3,9 +3,13 @@ defmodule CodegenWeb.LibraryControllerTest do
 
   import Codegen.SDKFixtures
 
-  @create_attrs %{description: "some description", name: "some name"}
-  @update_attrs %{description: "some updated description", name: "some updated name"}
-  @invalid_attrs %{description: nil, name: nil}
+  @create_attrs %{description: "some description", slug: "some-name", name: "some name"}
+  @update_attrs %{
+    description: "some updated description",
+    slug: "some-updated-name",
+    name: "some updated name"
+  }
+  @invalid_attrs %{description: nil, slug: nil, name: nil}
 
   describe "index" do
     test "lists all libraries", %{conn: conn} do
@@ -34,6 +38,7 @@ defmodule CodegenWeb.LibraryControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.library_path(conn, :create), library: @invalid_attrs)
+      # Who wrote this? this doesn't test anything useful?
       assert html_response(conn, 200) =~ "New Library"
     end
   end

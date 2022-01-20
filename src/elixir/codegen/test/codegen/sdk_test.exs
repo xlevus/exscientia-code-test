@@ -8,7 +8,7 @@ defmodule Codegen.SDKTest do
 
     import Codegen.SDKFixtures
 
-    @invalid_attrs %{description: nil, name: nil}
+    @invalid_attrs %{description: nil, slug: nil, name: nil}
 
     test "list_libraries/0 returns all libraries" do
       library = library_fixture()
@@ -26,6 +26,7 @@ defmodule Codegen.SDKTest do
       assert {:ok, %Library{} = library} = SDK.create_library(valid_attrs)
       assert library.description == "some description"
       assert library.name == "some name"
+      assert library.slug == "some-name"
     end
 
     test "create_library/1 with invalid data returns error changeset" do

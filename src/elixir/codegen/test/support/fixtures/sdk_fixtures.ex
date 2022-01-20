@@ -12,7 +12,8 @@ defmodule Codegen.SDKFixtures do
       attrs
       |> Enum.into(%{
         description: "some description",
-        name: "some name"
+        name: "some name",
+        slug: "some-name"
       })
       |> Codegen.SDK.create_library()
 

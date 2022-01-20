@@ -4,6 +4,7 @@
   <thead>
     <tr>
       <th>Name</th>
+      <th>Slug</th>
       <th>Description</th>
 
       <th></th>
@@ -13,6 +14,7 @@
 <%= for library <- @libraries do %>
     <tr>
       <td><%= library.name %></td>
+      <td><%= library.slug %></td>
       <td><%= library.description %></td>
 
       <td>
