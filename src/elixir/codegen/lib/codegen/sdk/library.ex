@@ -13,6 +13,6 @@ defmodule Codegen.SDK.Library do
   def changeset(library, attrs) do
     library
     |> cast(attrs, [:name, :description])
-    |> validate_required([:name, :description])
+    |> validate_required([:name])
   end
 end
