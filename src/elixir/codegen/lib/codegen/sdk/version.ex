@@ -14,7 +14,8 @@ defmodule Codegen.SDK.Version do
   @doc false
   def changeset(version, attrs) do
     version
-    |> cast(attrs, [:schema, :data_uri, :version])
-    |> validate_required([:schema, :data_uri, :version])
+    |> cast(attrs, [:schema, :data_uri, :version, :library])
+    |> validate_required([:schema, :data_uri, :version, :library])
+    |> unique_constraint(:version)
   end
 end

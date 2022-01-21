@@ -35,7 +35,13 @@ defmodule Codegen.SDK do
       ** (Ecto.NoResultsError)
 
   """
-  def get_library!(id), do: Repo.get!(Library, id)
+  def get_library!(id) do
+    if Integer.parse(id) === :error do
+      Repo.get_by(Library, slug: id)
+    else
+      Repo.get!(Library, id)
+    end
+  end
 
   @doc """
   Creates a library.
@@ -117,6 +123,12 @@ defmodule Codegen.SDK do
     Repo.all(Version)
   end
 
+  def list_versions(%Library{} = library) do
+    Version
+    |> Ecto.Query.where(library: ^library.id)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single version.
 
@@ -131,7 +143,7 @@ defmodule Codegen.SDK do
       ** (Ecto.NoResultsError)
 
   """
-  def get_version!(id), do: Repo.get!(Version, id)
+  def get_version!(version), do: Repo.get_by!(Version, version: version)
 
   @doc """
   Creates a version.

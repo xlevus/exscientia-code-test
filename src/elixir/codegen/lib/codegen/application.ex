@@ -15,9 +15,10 @@ defmodule Codegen.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Codegen.PubSub},
       # Start the Endpoint (http/https)
-      CodegenWeb.Endpoint
+      CodegenWeb.Endpoint,
       # Start a worker by calling: Codegen.Worker.start_link(arg)
       # {Codegen.Worker, arg}
+      {Finch, name: MyFinch}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

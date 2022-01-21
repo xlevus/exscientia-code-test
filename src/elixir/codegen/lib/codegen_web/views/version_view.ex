@@ -12,9 +12,9 @@ defmodule CodegenWeb.VersionView do
 
   def render("version.json", %{version: version}) do
     %{
-      id: version.id,
       schema: version.schema,
-      data_uri: version.data_uri
+      data_uri: version.data_uri,
+      version: version.version
     }
   end
 end
