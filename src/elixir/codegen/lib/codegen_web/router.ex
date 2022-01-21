@@ -22,9 +22,10 @@ defmodule CodegenWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", CodegenWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", CodegenWeb do
+    pipe_through(:api)
+    resources("/library/:library_slug/version", VersionController)
+  end
 
   # Enables LiveDashboard only for development
   #

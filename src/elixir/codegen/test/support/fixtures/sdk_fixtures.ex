@@ -19,4 +19,19 @@ defmodule Codegen.SDKFixtures do
 
     library
   end
+
+  @doc """
+  Generate a version.
+  """
+  def version_fixture(attrs \\ %{}) do
+    {:ok, version} =
+      attrs
+      |> Enum.into(%{
+        data_uri: "some data_uri",
+        schema: %{}
+      })
+      |> Codegen.SDK.create_version()
+
+    version
+  end
 end
