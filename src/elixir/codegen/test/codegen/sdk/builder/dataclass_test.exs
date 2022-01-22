@@ -21,18 +21,19 @@ defmodule Codegen.SDK.Builder.DataclassTest do
 
       assert context == %{
                classes: [class],
+               imports: ["typing"],
                root_schema: @schema
              }
     end
   end
 
   describe "property extraction" do
-    test "extract_properties returns tuples" do
-      {property, _} =
+    test "extract_properties returns" do
+      {_, property} =
         Dataclass.process_property(
+          %{},
           "field_name",
-          %{"type" => "integer", "description" => "foo"},
-          %{}
+          %{"type" => "integer", "description" => "foo"}
         )
 
       assert property.name == "field_name"

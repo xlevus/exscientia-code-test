@@ -13,10 +13,10 @@ defmodule Codegen.SDK.Builder.Dataclass do
       |> Map.get("properties", [])
       |> Map.to_list()
 
-    {properties, context} =
+    {context, properties} =
       context
       |> Map.put_new(:root_schema, schema)
-      |> extract_properties(property_spec)
+      |> extract_properties(property_spec, [])
 
     klass = %Klass{
       name: name,
@@ -27,35 +27,38 @@ defmodule Codegen.SDK.Builder.Dataclass do
     {klass, update_context(context, classes: [klass])}
   end
 
-  def extract_properties(context, properties) do
-    {for {name, spec} <- properties do
-       {property, context} = process_property(name, spec, context)
-       property
-     end, context}
+  def extract_properties(context, [], properties) do
+    {context, properties}
   end
 
-  def process_property(name, spec, context) do
-    [type | ctx_updates] = py_type(Map.get(spec, "type"), spec, context)
+  def extract_properties(context, [{name, spec} | remaining], properties) do
+    {context, property} = process_property(context, name, spec)
+
+    extract_properties(context, remaining, properties ++ [property])
+  end
+
+  def process_property(context, name, spec) do
+    [type | ctx_updates] = py_type(Map.get(spec, "type"), spec)
     context = update_context(context, ctx_updates)
 
     {
+      context,
       %Property{
         name: name,
         py_type: type,
         docstring: Map.get(spec, "description")
-      },
-      context
+      }
     }
   end
 
-  def py_type("integer", _, _), do: ["int"]
+  def py_type("integer", _), do: ["int"]
 
-  def py_type("number", _, _),
+  def py_type("number", _),
     do: ["typing.Union[int, float, decimal.Decimal]", imports: ["typing", "decimal"]]
 
-  def py_type("string", _, _), do: ["typing.AnyStr", imports: ["typing"]]
+  def py_type("string", _), do: ["typing.AnyStr", imports: ["typing"]]
 
-  def py_type(_, _, _), do: ["typing.Any", imports: ["typing"]]
+  def py_type(_, _), do: ["typing.Any", imports: ["typing"]]
 
   def update_context(context, []) do
     context
