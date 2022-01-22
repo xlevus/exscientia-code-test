@@ -38,6 +38,9 @@ defmodule Codegen.SDK.Builder.Dataclass do
   end
 
   def process_property(ctx, name, spec) do
+    # Bodge, but don't want to pass around yet another var
+    spec = Map.put(spec, :name, name)
+
     {ctx, type} = py_type(ctx, Map.get(spec, "type"), spec)
 
     {
@@ -73,10 +76,14 @@ defmodule Codegen.SDK.Builder.Dataclass do
   end
 
   def py_type(ctx, ["array", :properties], spec) do
-    {ctx, "Foo"}
+    # This should probably assert it's unique
+    name = Macro.camelize(spec[:name])
+
+    {ctx, klass} = build(name, spec, ctx)
+    {ctx, name}
   end
 
-  def py_type(_, _, _), do: ["typing.Any", imports: ["typing"]]
+  def py_type(ctx, _, _), do: {update_ctx(ctx, imports: ["typing"]), "typing.Any"}
 
   def update_ctx(ctx, []) do
     ctx
