@@ -54,9 +54,24 @@ defmodule Codegen.SDK.Builder.Dataclass do
   def py_type("integer", _), do: ["int"]
 
   def py_type("number", _),
-    do: ["typing.Union[int, float, decimal.Decimal]", imports: ["typing", "decimal"]]
+    do: {"typing.Union[int, float, decimal.Decimal]", imports: ["typing", "decimal"]}
 
   def py_type("string", _), do: ["typing.AnyStr", imports: ["typing"]]
+
+  def py_type("array", spec) do
+    [subtype | changes] =
+      cond do
+        Map.has_key?(spec, "items") -> py_type(["array", :items], spec)
+        Map.has_key?(spec, "properties") -> py_type(["array", :properties], spec)
+        true -> py_type(nil, nil)
+      end
+
+    [~s|typing.List[#{subtype}]|] ++ changes
+  end
+
+  def py_type(["array", :properties], spec) do
+    ["Foo"]
+  end
 
   def py_type(_, _), do: ["typing.Any", imports: ["typing"]]
 

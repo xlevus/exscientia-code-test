@@ -11,6 +11,17 @@ defmodule Codegen.SDK.Builder.DataclassTest do
     }
   }
 
+  @nested_array_schema %{
+    "properties" => %{
+      "nested" => %{
+        "type" => "array",
+        "properties" => %{
+          "nested_prop" => %{}
+        }
+      }
+    }
+  }
+
   describe "build dataclass" do
     test "builds a dataclass" do
       {class, context} = Dataclass.build("Example", @schema)
@@ -24,6 +35,10 @@ defmodule Codegen.SDK.Builder.DataclassTest do
                imports: ["typing"],
                root_schema: @schema
              }
+    end
+
+    test "builds nested dataclass" do
+      {class, context} = Dataclass.build("NestedExample", @nested_array_schema)
     end
   end
 
