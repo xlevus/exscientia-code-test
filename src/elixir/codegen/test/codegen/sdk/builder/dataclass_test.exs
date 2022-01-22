@@ -13,24 +13,22 @@ defmodule Codegen.SDK.Builder.DataclassTest do
 
   @nested_array_schema %{
     "properties" => %{
-      "nested" => %{
+      "int_array" => %{
         "type" => "array",
-        "properties" => %{
-          "nested_prop" => %{}
-        }
+        "items" => %{"type" => "integer"}
       }
     }
   }
 
   describe "build dataclass" do
     test "builds a dataclass" do
-      {class, context} = Dataclass.build("Example", @schema)
+      {ctx, class} = Dataclass.build("Example", @schema)
 
       assert class.name == "Example"
       assert is_list(class.properties)
       assert class.docstring == @schema["description"]
 
-      assert context == %{
+      assert ctx == %{
                classes: [class],
                imports: ["typing"],
                root_schema: @schema
@@ -38,7 +36,11 @@ defmodule Codegen.SDK.Builder.DataclassTest do
     end
 
     test "builds nested dataclass" do
-      {class, context} = Dataclass.build("NestedExample", @nested_array_schema)
+      {ctx, class} = Dataclass.build("NestedExample", @nested_array_schema)
+
+      assert class.properties == [
+               %Property{name: "int_array", py_type: "typing.List[int]"}
+             ]
     end
   end
 
@@ -57,19 +59,19 @@ defmodule Codegen.SDK.Builder.DataclassTest do
     end
   end
 
-  describe "context merging" do
-    test "empty context creates imports" do
-      ctx = Dataclass.update_context(%{}, imports: ["foo"])
+  describe "ctx merging" do
+    test "empty ctx creates imports" do
+      ctx = Dataclass.update_ctx(%{}, imports: ["foo"])
       assert ctx == %{imports: ["foo"]}
     end
 
     test "appends new imports" do
-      ctx = Dataclass.update_context(%{imports: ["foo"]}, imports: ["bar"])
+      ctx = Dataclass.update_ctx(%{imports: ["foo"]}, imports: ["bar"])
       assert ctx == %{imports: ["foo", "bar"]}
     end
 
     test "deduplicates new imports" do
-      ctx = Dataclass.update_context(%{imports: ["foo"]}, imports: ["foo"])
+      ctx = Dataclass.update_ctx(%{imports: ["foo"]}, imports: ["foo"])
       assert ctx == %{imports: ["foo"]}
     end
   end

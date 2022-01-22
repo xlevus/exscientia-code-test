@@ -7,14 +7,14 @@ defmodule Klass do
 end
 
 defmodule Codegen.SDK.Builder.Dataclass do
-  def build(name, schema, context \\ %{}) do
+  def build(name, schema, ctx \\ %{}) do
     property_spec =
       schema
       |> Map.get("properties", [])
       |> Map.to_list()
 
-    {context, properties} =
-      context
+    {ctx, properties} =
+      ctx
       |> Map.put_new(:root_schema, schema)
       |> extract_properties(property_spec, [])
 
@@ -24,25 +24,24 @@ defmodule Codegen.SDK.Builder.Dataclass do
       docstring: Map.get(schema, "description")
     }
 
-    {klass, update_context(context, classes: [klass])}
+    {update_ctx(ctx, classes: [klass]), klass}
   end
 
-  def extract_properties(context, [], properties) do
-    {context, properties}
+  def extract_properties(ctx, [], properties) do
+    {ctx, properties}
   end
 
-  def extract_properties(context, [{name, spec} | remaining], properties) do
-    {context, property} = process_property(context, name, spec)
+  def extract_properties(ctx, [{name, spec} | remaining], properties) do
+    {ctx, property} = process_property(ctx, name, spec)
 
-    extract_properties(context, remaining, properties ++ [property])
+    extract_properties(ctx, remaining, properties ++ [property])
   end
 
-  def process_property(context, name, spec) do
-    [type | ctx_updates] = py_type(Map.get(spec, "type"), spec)
-    context = update_context(context, ctx_updates)
+  def process_property(ctx, name, spec) do
+    {ctx, type} = py_type(ctx, Map.get(spec, "type"), spec)
 
     {
-      context,
+      ctx,
       %Property{
         name: name,
         py_type: type,
@@ -51,48 +50,52 @@ defmodule Codegen.SDK.Builder.Dataclass do
     }
   end
 
-  def py_type("integer", _), do: ["int"]
+  def py_type(ctx, "integer", _), do: {ctx, "int"}
 
-  def py_type("number", _),
-    do: {"typing.Union[int, float, decimal.Decimal]", imports: ["typing", "decimal"]}
+  def py_type(ctx, "number", _),
+    do: {update_ctx(ctx, imports: ["typing"]), "typing.Union[int, float]"}
 
-  def py_type("string", _), do: ["typing.AnyStr", imports: ["typing"]]
+  def py_type(ctx, "string", _), do: {update_ctx(ctx, imports: ["typing"]), "typing.AnyStr"}
 
-  def py_type("array", spec) do
-    [subtype | changes] =
+  def py_type(ctx, "array", spec) do
+    {ctx, subtype} =
       cond do
-        Map.has_key?(spec, "items") -> py_type(["array", :items], spec)
-        Map.has_key?(spec, "properties") -> py_type(["array", :properties], spec)
-        true -> py_type(nil, nil)
+        Map.has_key?(spec, "items") -> py_type(ctx, ["array", :items], spec["items"])
+        Map.has_key?(spec, "properties") -> py_type(ctx, ["array", :properties], spec)
+        true -> py_type(ctx, nil, nil)
       end
 
-    [~s|typing.List[#{subtype}]|] ++ changes
+    {ctx, ~s|typing.List[#{subtype}]|}
   end
 
-  def py_type(["array", :properties], spec) do
-    ["Foo"]
+  def py_type(ctx, ["array", :items], spec) do
+    py_type(ctx, Map.get(spec, "type"), spec)
   end
 
-  def py_type(_, _), do: ["typing.Any", imports: ["typing"]]
-
-  def update_context(context, []) do
-    context
+  def py_type(ctx, ["array", :properties], spec) do
+    {ctx, "Foo"}
   end
 
-  def update_context(context, [{ctx_field, field_change} | remaining]) do
-    context
-    |> update_context_field(ctx_field, field_change)
-    |> update_context(remaining)
+  def py_type(_, _, _), do: ["typing.Any", imports: ["typing"]]
+
+  def update_ctx(ctx, []) do
+    ctx
   end
 
-  defp update_context_field(context, :imports, changes) do
-    Map.update(context, :imports, changes, fn val ->
+  def update_ctx(ctx, [{ctx_field, field_change} | remaining]) do
+    ctx
+    |> update_ctx_field(ctx_field, field_change)
+    |> update_ctx(remaining)
+  end
+
+  defp update_ctx_field(ctx, :imports, changes) do
+    Map.update(ctx, :imports, changes, fn val ->
       Enum.uniq(val ++ changes)
     end)
   end
 
-  defp update_context_field(context, :classes, changes) do
-    Map.update(context, :classes, changes, fn val ->
+  defp update_ctx_field(ctx, :classes, changes) do
+    Map.update(ctx, :classes, changes, fn val ->
       val ++ changes
     end)
   end
