@@ -15,7 +15,7 @@ defmodule Codegen.SDK.Builder.Dataclass do
 
     {ctx, properties} =
       ctx
-      |> Map.put_new(:root_schema, schema)
+      |> update_ctx(root_schema: schema)
       |> extract_properties(property_spec, [])
 
     klass = %Klass{
@@ -24,7 +24,7 @@ defmodule Codegen.SDK.Builder.Dataclass do
       docstring: Map.get(schema, "description")
     }
 
-    {update_ctx(ctx, classes: [klass]), klass}
+    {update_ctx(ctx, classes: [klass], primary_class: klass), klass}
   end
 
   def extract_properties(ctx, [], properties) do
@@ -106,5 +106,13 @@ defmodule Codegen.SDK.Builder.Dataclass do
     Map.update(ctx, :classes, changes, fn val ->
       val ++ changes
     end)
+  end
+
+  defp update_ctx_field(ctx, :primary_class, class) do
+    Map.put_new(ctx, :primary_class, class)
+  end
+
+  defp update_ctx_field(ctx, :root_schema, schema) do
+    Map.put_new(ctx, :root_schema, schema)
   end
 end

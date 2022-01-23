@@ -35,7 +35,8 @@ defmodule Codegen.SDK.Builder.DataclassTest do
       assert ctx == %{
                classes: [class],
                imports: ["typing"],
-               root_schema: @schema
+               root_schema: @schema,
+               primary_class: class
              }
     end
 
