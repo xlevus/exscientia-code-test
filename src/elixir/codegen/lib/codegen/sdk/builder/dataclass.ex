@@ -68,7 +68,7 @@ defmodule Codegen.SDK.Builder.Dataclass do
         true -> py_type(ctx, nil, nil)
       end
 
-    {ctx, ~s|typing.List[#{subtype}]|}
+    {ctx, ~s|typing.List["#{subtype}"]|}
   end
 
   def py_type(ctx, ["array", :items], spec) do
@@ -76,7 +76,8 @@ defmodule Codegen.SDK.Builder.Dataclass do
   end
 
   def py_type(ctx, ["array", :properties], spec) do
-    # This should probably assert it's unique
+    # This should probably assert it's unique but there's more edge cases
+    # in this than a Le Corbusier building.
     name = Macro.camelize(spec[:name])
 
     {ctx, klass} = build(name, spec, ctx)

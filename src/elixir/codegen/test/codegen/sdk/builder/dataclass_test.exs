@@ -43,8 +43,8 @@ defmodule Codegen.SDK.Builder.DataclassTest do
       {ctx, class} = Dataclass.build("NestedExample", @nested_array_schema)
 
       assert class.properties == [
-               %Property{name: "int_array", py_type: "typing.List[int]"},
-               %Property{name: "obj_array", py_type: "typing.List[ObjArray]"}
+               %Property{name: "int_array", py_type: "typing.List[\"int\"]"},
+               %Property{name: "obj_array", py_type: "typing.List[\"ObjArray\"]"}
              ]
 
       assert length(ctx[:classes]) == 2
