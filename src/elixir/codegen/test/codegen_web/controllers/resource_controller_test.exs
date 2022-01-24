@@ -4,6 +4,7 @@ defmodule CodegenWeb.ResourceControllerTest do
   import Codegen.SDKFixtures
 
   alias Codegen.SDK.Resource
+  alias Codegen.SDK
 
   @create_attrs %{
     name: "some name",
@@ -42,6 +43,9 @@ defmodule CodegenWeb.ResourceControllerTest do
                "schema" => %{},
                "uri" => "some uri"
              } = json_response(conn, 200)["data"]
+
+      from_db = SDK.get_resource!(id)
+      assert from_db.library == library.id
     end
 
     test "renders errors when data is invalid", %{conn: conn, library: library} do
@@ -102,8 +106,8 @@ defmodule CodegenWeb.ResourceControllerTest do
     end
   end
 
-  defp create_resource(_) do
-    resource = resource_fixture()
+  defp create_resource(%{library: library}) do
+    resource = resource_fixture(library, %{})
     %{resource: resource}
   end
 end

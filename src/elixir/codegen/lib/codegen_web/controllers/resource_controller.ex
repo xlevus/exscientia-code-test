@@ -12,7 +12,9 @@ defmodule CodegenWeb.ResourceController do
   end
 
   def create(conn, %{"resource" => resource_params, "library_id" => library_id}) do
-    with {:ok, %Resource{} = resource} <- SDK.create_resource(resource_params) do
+    library = SDK.get_library!(library_id)
+
+    with {:ok, %Resource{} = resource} <- SDK.create_resource(library, resource_params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.resource_path(conn, :show, library_id, resource))

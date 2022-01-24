@@ -41,7 +41,7 @@ defmodule Codegen.SDK do
 
   def get_library!(id) do
     cond do
-      Regex.match?(~r|[0-9]+|, id) -> Repo.get(Library, id)
+      Regex.match?(~r|^[0-9]+$|, id) -> Repo.get(Library, id)
       true -> Repo.get_by!(Library, slug: id)
     end
   end
@@ -154,8 +154,8 @@ defmodule Codegen.SDK do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_resource(attrs \\ %{}) do
-    %Resource{}
+  def create_resource(%Library{} = library, attrs \\ %{}) do
+    %Resource{library: library.id}
     |> Resource.changeset(attrs)
     |> Repo.insert()
   end
