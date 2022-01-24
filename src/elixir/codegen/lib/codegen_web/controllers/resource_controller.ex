@@ -1,0 +1,43 @@
+defmodule CodegenWeb.ResourceController do
+  use CodegenWeb, :controller
+
+  alias Codegen.SDK
+  alias Codegen.SDK.Resource
+
+  action_fallback(CodegenWeb.FallbackController)
+
+  def index(conn, _params) do
+    resources = SDK.list_resources()
+    render(conn, "index.json", resources: resources)
+  end
+
+  def create(conn, %{"resource" => resource_params}) do
+    with {:ok, %Resource{} = resource} <- SDK.create_resource(resource_params) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", Routes.resource_path(conn, :show, resource))
+      |> render("show.json", resource: resource)
+    end
+  end
+
+  def show(conn, %{"id" => id}) do
+    resource = SDK.get_resource!(id)
+    render(conn, "show.json", resource: resource)
+  end
+
+  def update(conn, %{"id" => id, "resource" => resource_params}) do
+    resource = SDK.get_resource!(id)
+
+    with {:ok, %Resource{} = resource} <- SDK.update_resource(resource, resource_params) do
+      render(conn, "show.json", resource: resource)
+    end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    resource = SDK.get_resource!(id)
+
+    with {:ok, %Resource{}} <- SDK.delete_resource(resource) do
+      send_resp(conn, :no_content, "")
+    end
+  end
+end

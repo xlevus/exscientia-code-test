@@ -19,4 +19,20 @@ defmodule Codegen.SDKFixtures do
 
     library
   end
+
+  @doc """
+  Generate a resource.
+  """
+  def resource_fixture(attrs \\ %{}) do
+    {:ok, resource} =
+      attrs
+      |> Enum.into(%{
+        name: "some name",
+        schema: %{},
+        uri: "some uri"
+      })
+      |> Codegen.SDK.create_resource()
+
+    resource
+  end
 end
