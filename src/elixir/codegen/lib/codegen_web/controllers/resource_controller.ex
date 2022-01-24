@@ -6,21 +6,21 @@ defmodule CodegenWeb.ResourceController do
 
   action_fallback(CodegenWeb.FallbackController)
 
-  def index(conn, _params) do
+  def index(conn, %{"library_id" => library_id}) do
     resources = SDK.list_resources()
     render(conn, "index.json", resources: resources)
   end
 
-  def create(conn, %{"resource" => resource_params}) do
+  def create(conn, %{"resource" => resource_params, "library_id" => library_id}) do
     with {:ok, %Resource{} = resource} <- SDK.create_resource(resource_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.resource_path(conn, :show, resource))
+      |> put_resp_header("location", Routes.resource_path(conn, :show, library_id, resource))
       |> render("show.json", resource: resource)
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"library_id" => library_id, "id" => id}) do
     resource = SDK.get_resource!(id)
     render(conn, "show.json", resource: resource)
   end
