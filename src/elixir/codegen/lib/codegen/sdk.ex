@@ -147,14 +147,14 @@ defmodule Codegen.SDK do
 
   ## Examples
 
-      iex> create_resource(%{field: value})
+      iex> create_resource(%{field: value}, library)
       {:ok, %Resource{}}
 
-      iex> create_resource(%{field: bad_value})
+      iex> create_resource(%{field: bad_value}, library)
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_resource(%Library{} = library, attrs \\ %{}) do
+  def create_resource(attrs, %Library{} = library) do
     %Resource{library: library.id}
     |> Resource.changeset(attrs)
     |> Repo.insert()

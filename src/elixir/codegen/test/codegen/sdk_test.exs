@@ -66,7 +66,7 @@ defmodule Codegen.SDKTest do
 
     import Codegen.SDKFixtures
 
-    @invalid_attrs %{name: nil, schema: nil, uri: nil}
+    @invalid_attrs %{name: nil, schema: nil, uri: nil, schema_uri: nil}
 
     setup %{} do
       {:ok, library: library_fixture()}
@@ -83,16 +83,16 @@ defmodule Codegen.SDKTest do
     end
 
     test "create_resource/1 with valid data creates a resource", %{library: library} do
-      valid_attrs = %{name: "some name", schema: %{}, uri: "some uri"}
+      valid_attrs = %{name: "some name", schema: %{}, uri: "some uri", schema_uri: "schema uri"}
 
-      assert {:ok, %Resource{} = resource} = SDK.create_resource(library, valid_attrs)
+      assert {:ok, %Resource{} = resource} = SDK.create_resource(valid_attrs, library)
       assert resource.name == "some name"
       assert resource.schema == %{}
       assert resource.uri == "some uri"
     end
 
     test "create_resource/1 with invalid data returns error changeset", %{library: library} do
-      assert {:error, %Ecto.Changeset{}} = SDK.create_resource(library, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = SDK.create_resource(@invalid_attrs, library)
     end
 
     test "update_resource/2 with valid data updates the resource" do

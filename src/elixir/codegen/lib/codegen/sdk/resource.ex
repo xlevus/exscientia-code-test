@@ -6,6 +6,7 @@ defmodule Codegen.SDK.Resource do
     field(:name, :string)
     field(:schema, :map)
     field(:uri, :string)
+    field(:schema_uri, :string)
     field(:library, :id)
 
     timestamps()
@@ -14,7 +15,7 @@ defmodule Codegen.SDK.Resource do
   @doc false
   def changeset(resource, attrs) do
     resource
-    |> cast(attrs, [:name, :schema, :uri])
-    |> validate_required([:name, :schema, :uri])
+    |> cast(attrs, [:name, :schema, :uri, :schema_uri])
+    |> validate_required([:name, :schema, :uri, :schema_uri])
   end
 end

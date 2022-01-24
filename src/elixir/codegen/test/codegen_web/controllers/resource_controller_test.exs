@@ -6,17 +6,23 @@ defmodule CodegenWeb.ResourceControllerTest do
   alias Codegen.SDK.Resource
   alias Codegen.SDK
 
+  # These should be env vars
+  # or even a test-runner-launched server. but eh.
+  @uri "http://localhost:8080"
+  @schema_uri "http://localhost:8080/schema.json"
+
   @create_attrs %{
     name: "some name",
     schema: %{},
-    uri: "some uri"
+    uri: @uri,
+    schema_uri: @schema_uri
   }
   @update_attrs %{
     name: "some updated name",
     schema: %{},
     uri: "some updated uri"
   }
-  @invalid_attrs %{name: nil, schema: nil, uri: nil}
+  @invalid_attrs %{name: nil, schema: nil, uri: nil, schema_uri: nil}
 
   setup %{conn: conn} do
     {:ok, library: library_fixture(), conn: put_req_header(conn, "accept", "application/json")}
@@ -40,9 +46,10 @@ defmodule CodegenWeb.ResourceControllerTest do
       assert %{
                "id" => ^id,
                "name" => "some name",
-               "schema" => %{},
-               "uri" => "some uri"
-             } = json_response(conn, 200)["data"]
+               "uri" => @uri,
+               "schema_uri" => @schema_uri,
+               "schema" => %{}
+             } = json_response(conn, 200)["data"] |> Map.replace("schema", %{})
 
       from_db = SDK.get_resource!(id)
       assert from_db.library == library.id
@@ -107,7 +114,7 @@ defmodule CodegenWeb.ResourceControllerTest do
   end
 
   defp create_resource(%{library: library}) do
-    resource = resource_fixture(library, %{})
+    resource = resource_fixture(%{}, library)
     %{resource: resource}
   end
 end

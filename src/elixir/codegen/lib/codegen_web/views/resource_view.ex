@@ -15,6 +15,7 @@ defmodule CodegenWeb.ResourceView do
       id: resource.id,
       name: resource.name,
       schema: resource.schema,
+      schema_uri: resource.schema_uri,
       uri: resource.uri
     }
   end

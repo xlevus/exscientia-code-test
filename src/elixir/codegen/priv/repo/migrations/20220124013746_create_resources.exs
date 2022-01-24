@@ -6,6 +6,7 @@ defmodule Codegen.Repo.Migrations.CreateResources do
       add(:name, :string)
       add(:schema, :map)
       add(:uri, :string)
+      add(:schema_uri, :string)
       add(:library, references(:libraries, on_delete: :nothing))
 
       timestamps()

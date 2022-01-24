@@ -3,6 +3,7 @@ defmodule CodegenWeb.ResourceController do
 
   alias Codegen.SDK
   alias Codegen.SDK.Resource
+  alias Codegen.SDK.SchemaFetch
 
   action_fallback(CodegenWeb.FallbackController)
 
@@ -14,7 +15,10 @@ defmodule CodegenWeb.ResourceController do
   def create(conn, %{"resource" => resource_params, "library_id" => library_id}) do
     library = SDK.get_library!(library_id)
 
-    with {:ok, %Resource{} = resource} <- SDK.create_resource(library, resource_params) do
+    with {:ok, %Resource{} = resource} <-
+           resource_params
+           |> Map.put("schema", resource_params |> Map.get("schema_uri") |> SchemaFetch.get())
+           |> SDK.create_resource(library) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.resource_path(conn, :show, library_id, resource))
