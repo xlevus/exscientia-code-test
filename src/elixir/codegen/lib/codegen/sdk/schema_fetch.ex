@@ -6,6 +6,5 @@ defmodule Codegen.SDK.SchemaFetch do
       {:ok, response} -> response.body
     end
     |> Jason.decode!()
-    |> IO.inspect()
   end
 end

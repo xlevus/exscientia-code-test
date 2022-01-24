@@ -69,19 +69,6 @@ defmodule CodegenWeb.LibraryControllerTest do
     end
   end
 
-  describe "delete library" do
-    setup [:create_library]
-
-    test "deletes chosen library", %{conn: conn, library: library} do
-      conn = delete(conn, Routes.library_path(conn, :delete, library))
-      assert redirected_to(conn) == Routes.library_path(conn, :index)
-
-      assert_error_sent(404, fn ->
-        get(conn, Routes.library_path(conn, :show, library))
-      end)
-    end
-  end
-
   defp create_library(_) do
     library = library_fixture()
     %{library: library}

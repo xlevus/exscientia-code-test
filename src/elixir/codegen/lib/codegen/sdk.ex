@@ -35,11 +35,14 @@ defmodule Codegen.SDK do
       ** (Ecto.NoResultsError)
 
   """
+  def get_library!(id) when is_integer(id) do
+    Repo.get!(Library, id)
+  end
+
   def get_library!(id) do
-    if Integer.parse(id) === :error do
-      Repo.get_by(Library, slug: id)
-    else
-      Repo.get!(Library, id)
+    cond do
+      Regex.match?(~r|[0-9]+|, id) -> Repo.get(Library, id)
+      true -> Repo.get_by!(Library, slug: id)
     end
   end
 

@@ -22,7 +22,6 @@ defmodule Codegen.SDK.Builder.Render do
   def render(ctx) do
     {result, bindings} = Code.eval_quoted(@src_template, Map.to_list(ctx))
 
-    IO.inspect(1)
     result
   end
 end

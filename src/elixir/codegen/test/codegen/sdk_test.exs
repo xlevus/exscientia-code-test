@@ -18,6 +18,7 @@ defmodule Codegen.SDKTest do
     test "get_library!/1 returns the library with given id" do
       library = library_fixture()
       assert SDK.get_library!(library.id) == library
+      assert SDK.get_library!(library.slug) == library
     end
 
     test "create_library/1 with valid data creates a library" do
