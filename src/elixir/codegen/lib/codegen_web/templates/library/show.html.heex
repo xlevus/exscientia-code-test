@@ -1,5 +1,6 @@
 <h1>Show Library</h1>
 
+
 <ul>
 
   <li>
@@ -26,5 +27,6 @@
 
 </ul>
 
+<span><%= link "Download", to: Routes.library_library_path(@conn, :download, @library) %></span> |
 <span><%= link "Edit", to: Routes.library_path(@conn, :edit, @library) %></span> |
 <span><%= link "Back", to: Routes.library_path(@conn, :index) %></span>

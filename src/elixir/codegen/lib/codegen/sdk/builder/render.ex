@@ -3,7 +3,6 @@ defmodule Codegen.SDK.Builder.Render do
                 import dataclasses
                 import json
                 from urllib.request import urlopen
-                from baselib import Resource
                 <%= for import <- imports do %>import <%= import %><% end %>
 
                 <%= for klass <- classes do %>
