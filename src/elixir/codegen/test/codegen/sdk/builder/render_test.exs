@@ -21,7 +21,7 @@ defmodule Codegen.SDK.Builder.RenderTest do
     test "renders imports" do
       {context, _} = Dataclass.build("TestData", @schema)
 
-      code = Render.render(context)
+      code = Render.build_python(context)
 
       assert String.contains?(code, "import typing")
       assert String.contains?(code, "class TestData:")

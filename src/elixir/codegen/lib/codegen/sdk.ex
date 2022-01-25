@@ -126,6 +126,22 @@ defmodule Codegen.SDK do
     Repo.all(Resource)
   end
 
+  def list_resources(%Library{} = library) do
+    max_resource_ids =
+      from(r in Resource,
+        group_by: r.name,
+        select: {max(r.id)}
+      )
+
+    # No clue what magic is needed for joins to work.
+    # Honestly, at this point, the syntax DSL is so close to actual SQL,
+    # but so increcibly janky it should really just be SQL-as-text.
+    # |> join(:left, [r], max_id in subquery(max_resource_ids), on: r.id == max_id.id)
+    Resource
+    |> where([r], r.id in subquery(max_resource_ids))
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single resource.
 

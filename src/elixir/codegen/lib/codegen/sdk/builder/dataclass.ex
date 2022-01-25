@@ -19,7 +19,7 @@ defmodule Codegen.SDK.Builder.Dataclass do
       |> extract_properties(property_spec, [])
 
     klass = %Klass{
-      name: name,
+      name: Macro.camelize(name),
       properties: properties,
       docstring: Map.get(schema, "description")
     }
@@ -109,7 +109,7 @@ defmodule Codegen.SDK.Builder.Dataclass do
   end
 
   defp update_ctx_field(ctx, :primary_class, class) do
-    Map.put_new(ctx, :primary_class, class)
+    Map.put(ctx, :primary_class, class)
   end
 
   defp update_ctx_field(ctx, :root_schema, schema) do

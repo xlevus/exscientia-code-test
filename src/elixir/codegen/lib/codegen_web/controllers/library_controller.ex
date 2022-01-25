@@ -3,6 +3,7 @@ defmodule CodegenWeb.LibraryController do
 
   alias Codegen.SDK
   alias Codegen.SDK.Library
+  alias Codegen.SDK.Builder.Wheelbuilder
 
   def index(conn, _params) do
     libraries = SDK.list_libraries()
@@ -28,7 +29,8 @@ defmodule CodegenWeb.LibraryController do
 
   def show(conn, %{"id" => id}) do
     library = SDK.get_library!(id)
-    render(conn, "show.html", library: library)
+    resources = SDK.list_resources(library)
+    render(conn, "show.html", library: library, resources: resources)
   end
 
   def edit(conn, %{"id" => id}) do
@@ -58,5 +60,17 @@ defmodule CodegenWeb.LibraryController do
     conn
     |> put_flash(:info, "Library deleted successfully.")
     |> redirect(to: Routes.library_path(conn, :index))
+  end
+
+  def download(conn, %{"library_id" => id}) do
+    library = SDK.get_library!(id)
+
+    resources = SDK.list_resources(library)
+
+    {fname, contents} = Wheelbuilder.generate_package(library, resources)
+
+    conn
+    |> put_resp_header("Content-Disposition", ~s|attachment; filename="#{fname}"|)
+    |> text(contents)
   end
 end

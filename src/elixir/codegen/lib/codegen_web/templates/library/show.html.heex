@@ -4,13 +4,25 @@
 
   <li>
     <strong>Name:</strong>
-    <%= @library.name %>
+    <%= @library.name %> (<% @library.slug %>)
   </li>
 
   <li>
     <strong>Description:</strong>
     <%= @library.description %>
   </li>
+
+  <h2>Resources</h2>
+  <table>
+  <tr><th>Name</th><th>URI</th><th>Date</th></tr>
+  <%= for resource <- @resources do %>
+  <tr>
+    <td><%= resource.name %></td>
+    <td><%= resource.uri %></td>
+    <td><%= resource.updated_at %></td>
+  </tr>
+  <% end %>
+  </table>
 
 </ul>
 
