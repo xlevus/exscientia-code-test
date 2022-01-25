@@ -18,3 +18,15 @@ services:
       - "${DATASERV_INGRESS:-8080}:8080"
     volumes:
       - "./data:/data"
+
+  codegen:
+    image: elixir:latest
+    restart: on-failure
+    ports:
+      - "${CODEGEN_INGRESS:-4000}:4000"
+    volumes:
+      - "./src/elixir/codegen:/usr/src/myapp"
+    working_dir: /usr/src/myapp
+    entrypoint: "./run.sh"
+    environment:
+      DATABASE_URL: "ecto://postgres:postgres@postgres/codegen_dev"
