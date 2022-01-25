@@ -17,6 +17,16 @@ defmodule Codegen.SDK.Library do
     |> set_slug(library)
     |> validate_required([:name, :slug])
     |> unique_constraint(:slug)
+    |> validate_camelcase(:name)
+  end
+
+  defp validate_camelcase(changeset, field, options \\ []) do
+    validate_change(changeset, field, fn _, text ->
+      case Macro.camelize(text) == text && !String.contains?(text, " ") do
+        true -> []
+        false -> [{field, "Must be in CamelCase format"}]
+      end
+    end)
   end
 
   defp slugify(string) do
