@@ -1,11 +1,13 @@
 defmodule Codegen.SDK.Builder.Render do
   @src_template EEx.compile_string("""
-                import dataclass
+                import dataclasses
+                import json
+                from urllib.request import urlopen
                 from baselib import Resource
                 <%= for import <- imports do %>import <%= import %><% end %>
 
                 <%= for klass <- classes do %>
-                @dataclass
+                @dataclasses.dataclass
                 class <%= klass.name %>:
                     <%= if klass.docstring do %>\"""<%= klass.docstring %>\"""<% end %>
                 <%= for prop <- klass.properties do %>    <%= if prop.docstring do %><%= #: prop.docstring %><% end %>
@@ -13,9 +15,14 @@ defmodule Codegen.SDK.Builder.Render do
 
                 <% end %>
 
-                class Endpoint(Resource[<%= primary_class.name %>]):
+                class Endpoint:
                     uri = "<%= uri %>"
                     klass = <%= primary_class.name %>
+
+                    @classmethod
+                    def list(cls) -> typing.List[<%= primary_class.name %>]:
+                        resp = urlopen(cls.uri)
+                        return [cls.klass(**k) for k in  json.load(resp)]
                 """)
 
   @setup_template EEx.compile_string("""
